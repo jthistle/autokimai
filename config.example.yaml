@@ -1,0 +1,13 @@
+# Required
+auth:
+  user: foobar
+  api-key: myapikey
+
+# Optional
+action:
+  project-id: 12
+  activity-id: 4
+  start-date: 2021-09-21 # Incl.
+  end-date: 2021-10-30 # Incl.
+  daily-hours: 8
+  description: work

@@ -1,0 +1,11 @@
+auth:
+  user:
+  api-key:
+
+action:
+  project-id: # Optional
+  activity-id: # Optional
+  start-date: 
+  end-date:
+  daily-hours:
+  description: # Optional
