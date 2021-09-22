@@ -41,7 +41,7 @@ class AutoKimai:
         if res.status_code != 200:
             print(f"Request for {self.api(route)} did not succeed")
             print(f"Status code {res.status_code}")
-            print("Request body:", res.json())
+            print("Request body:", body)
             print("Response body:", res.json())
             raise Exception()
         
