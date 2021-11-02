@@ -59,7 +59,7 @@ class AutoKimai:
         activityRes = self.get(f"activities/{self.activity_id}")
         aName = activityRes.json()["name"]
 
-        print(f"About to add 4h a weekday between {self.date_range[0].isoformat()} and {self.date_range[1].isoformat()} inclusive")
+        print(f"About to add {self.hours}h per weekday between {self.date_range[0].isoformat()} and {self.date_range[1].isoformat()} inclusive")
         print(f'Project: "{pName}"')
         print(f'Activity: "{aName}"')
         try:
@@ -81,7 +81,7 @@ class AutoKimai:
         for project in content:
             pt = project["parentTitle"]
             groups[pt] = groups.get(pt, [])
-            groups[pt].append(f"\t{project['id']}: {project['parentTitle']} - {project['name']}")
+            groups[pt].append(f"\t{project['id']}: {pt} - {project['name']}")
 
             # projects_list += f"\t{project['id']}: {project['parentTitle']} - {project['name']}\n"
         for _, projects in groups.items():
