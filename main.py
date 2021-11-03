@@ -7,7 +7,7 @@ import yaml
 class AutoKimai:
     def __init__(self, config):
         self.config = config
-        
+
         self.HEADERS = {
             "X-AUTH-USER": config["auth"]["user"],
             "X-AUTH-TOKEN": config["auth"]["api-key"],
@@ -15,11 +15,11 @@ class AutoKimai:
 
         action = self.config["action"]
 
-        self.project_id = action["project-id"]
-        self.activity_id = action["activity-id"]
+        self.project_id = action.get("project-id")
+        self.activity_id = action.get("activity-id")
         self.date_range = (action["start-date"], action["end-date"])
-        self.hours = action["daily-hours"]
-        self.desc = action["description"]
+        self.hours = action.get("daily-hours")
+        self.desc = action.get("description")
 
     def api(self, route):
         return f"https://kimai.neontribe.net/api/{route}"
@@ -44,7 +44,7 @@ class AutoKimai:
             print("Request body:", body)
             print("Response body:", res.json())
             raise Exception()
-        
+
         return res
 
     def run(self):
@@ -54,9 +54,19 @@ class AutoKimai:
         if self.activity_id is None:
             self.get_activity()
 
-        
-        print(f"About to add timesheets between {self.date_range[0].isoformat()} and {self.date_range[1].isoformat()}")
-        input("Press ENTER to continue, CTRL+C to cancel")
+        projectRes = self.get(f"projects/{self.project_id}")
+        pName = projectRes.json()["name"]
+        activityRes = self.get(f"activities/{self.activity_id}")
+        aName = activityRes.json()["name"]
+
+        print(f"About to add {self.hours}h per weekday between {self.date_range[0].isoformat()} and {self.date_range[1].isoformat()} inclusive")
+        print(f'Project: "{pName}"')
+        print(f'Activity: "{aName}"')
+        try:
+            input("Press ENTER to continue, CTRL+C to cancel")
+        except KeyboardInterrupt:
+            print("\nCancelling")
+            return
 
         # Add timesheets
         print("Adding timesheets, please wait...")
@@ -66,11 +76,17 @@ class AutoKimai:
     def get_project(self):
         res = self.get("projects")
         content = sorted(res.json(), key=lambda x: int(x["id"]))
+        groups = {}
 
-        projects_list = ""
         for project in content:
-            projects_list += f"{project['id']}: {project['parentTitle']} - {project['name']}\n"
-        print(projects_list)
+            pt = project["parentTitle"]
+            groups[pt] = groups.get(pt, [])
+            groups[pt].append(f"\t{project['id']}: {pt} - {project['name']}")
+
+            # projects_list += f"\t{project['id']}: {project['parentTitle']} - {project['name']}\n"
+        for _, projects in groups.items():
+            for p in projects:
+                print(p)
 
         self.project_id = int(input("Select project id: "))
 
